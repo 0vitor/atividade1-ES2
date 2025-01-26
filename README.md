@@ -18,5 +18,5 @@ docker run -d --name postgres-container -p 5432:5432 postgres-docker
 Para instalar as dependências necessárias, use o seguinte comando:
 
 ```bash
-pip install pyscopg2
+pip install psycopg2
 ```
