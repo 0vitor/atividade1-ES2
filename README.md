@@ -11,3 +11,12 @@ Para rodar o PostgreSQL com Docker, use os seguintes comandos:
 ```bash
 docker build -t postgres-docker .
 docker run -d --name postgres-container -p 5432:5432 postgres-docker
+```
+
+### 2. Instalar Dependências:
+
+Para instalar as dependências necessárias, use o seguinte comando:
+
+```bash
+pip install pyscopg2
+```
