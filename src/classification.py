@@ -1,12 +1,13 @@
 import json
 import psycopg2
 from datetime import datetime
-
+from dotenv import load_dotenv
+import os
 
 from urllib.parse import urlparse
 
 # URL de conexão
-db_url = "postgresql://ativdade_es2_user:odYsCJpkj3ui0qPNh9Ij9SYT43D9vgg8@dpg-cubpdf9u0jms73bvcko0-a.oregon-postgres.render.com/ativdade_es2"
+db_url = os.getenv("DB_URL")
 
 # Separar os componentes da URL
 result = urlparse(db_url)
