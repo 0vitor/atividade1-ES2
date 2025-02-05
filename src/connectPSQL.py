@@ -1,53 +1,33 @@
-import psycopg2
-from dotenv import load_dotenv
-import os
-from urllib.parse import urlparse
+from sqlalchemy import create_engine
+import pandas as pd
 
-load_dotenv()
+# URL do BD PostgreSQL
+db_url = 'postgresql://ativdade_es2_user:odYsCJpkj3ui0qPNh9Ij9SYT43D9vgg8@dpg-cubpdf9u0jms73bvcko0-a.oregon-postgres.render.com/ativdade_es2'
 
-db_url = os.getenv("DB_URL")
-
-if db_url is None:
-    raise ValueError("A variável de ambiente DB_URL não foi encontrada.")
-
-result = urlparse(db_url)
-
-if not all([result.username, result.password, result.hostname, result.path]):
-    raise ValueError("A URL de conexão do banco de dados está incompleta.")
-
-dbname = result.path[1:]
-user = result.username
-password = result.password
-host = result.hostname
-port = result.port or 5432
-
-
-def connect_db():
-    try:
-        connection = psycopg2.connect(
-            dbname=dbname,
-            user=user,
-            password=password,
-            host=host,
-            port=port,
-            sslmode="require",
-        )
-        return connection
-    except Exception as e:
-        print(f"Erro ao conectar ao banco de dados: {e}")
-        raise
-
+# Criar a conexão usando SQLAlchemy
+engine = create_engine(db_url)
 
 try:
-    connection = connect_db()
-    print("Conexão com o banco de dados estabelecida com sucesso!")
+    # Executar consulta e carregar no Pandas
+    df = pd.read_sql("SELECT * FROM issues", engine)
 
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM issues")
-        resultado = cursor.fetchall()
-        print(resultado)
+    # Exibir o número total de issues carregadas
+    print(f"Total de issues carregadas: {len(df)}")
 
-    connection.close()
+    # Salvar os dados como CSV
+    df.to_csv("issues.csv", index=False)
+    print("✅ Dados salvos como 'issues.csv' com sucesso!")
+
+    # Verificar o número de issues no CSV
+    df_csv = pd.read_csv("issues.csv")
+    print(f"Total de issues no CSV: {len(df_csv)}")
+    print(df.columns)  # Exibe os nomes das colunas
+
 
 except Exception as e:
-    print(f"Ocorreu um erro ao tentar conectar: {e}")
+    print(f"🚨 Erro ao consultar o banco: {e}")
+
+finally:
+    # Fechar a conexão
+    engine.dispose()
+    print("🔌 Conexão com o banco fechada.")
